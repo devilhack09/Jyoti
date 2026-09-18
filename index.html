@@ -60,7 +60,7 @@
       width: 100vw;
       height: 100vh;
       pointer-events: none;
-      z-index: 999999; /* Har screen ke upar dil float karenge */
+      z-index: 999999;
     }
 
     /* Tap Burst Heart Particle */
@@ -840,7 +840,7 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(18, 4, 24, 0.85);
+      background: rgba(18, 4, 24, 0.88);
       border: 1px solid rgba(255, 42, 133, 0.5);
       box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 42, 133, 0.4);
       backdrop-filter: blur(15px);
@@ -897,6 +897,18 @@
       justify-content: center;
     }
 
+    /* Hidden YouTube Background Audio Container */
+    #ytContainer {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 1px;
+      height: 1px;
+      opacity: 0.01;
+      pointer-events: none;
+      z-index: -1;
+    }
+
     /* Keyframes */
     @keyframes pulseGlow {
       0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 10px var(--neon-pink)); }
@@ -912,22 +924,26 @@
   <canvas id="heartsCanvas"></canvas>
 
   <!-- ========================================================
-       AUDIO PLAYER (Song: Tera Naam Loonga)
+       AUDIO PLAYER (1. Relative local song.mp3 + 2. YouTube Fallback)
        ======================================================== -->
-  <audio id="bgSongPlayer" loop preload="auto">
-    <!-- Local file uploaded by user -->
-    <source src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/uploaded_media_1789730565362.mp3" type="audio/mpeg">
-    <!-- Fallback if served in same directory -->
-    <source src="uploaded_media_1789730565362.mp3" type="audio/mpeg">
+  <audio id="bgSongPlayer" loop preload="auto" playsinline webkit-playsinline>
     <source src="song.mp3" type="audio/mpeg">
+    <source src="./song.mp3" type="audio/mpeg">
+    <source src="uploaded_media_1789730565362.mp3" type="audio/mpeg">
+    <source src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/uploaded_media_1789730565362.mp3" type="audio/mpeg">
   </audio>
+
+  <!-- Hidden YouTube Background Player (Guarantees playback online on Git even if MP3 is missing) -->
+  <div id="ytContainer">
+    <div id="ytPlayer"></div>
+  </div>
 
   <!-- Floating Music Bar -->
   <div class="floating-music-bar" id="musicBar" style="display: none;">
     <div class="music-disc" id="musicDisc">🎵</div>
     <div class="music-title-wrap">
       <span class="music-title">Tera Naam Loonga ♡</span>
-      <span class="music-sub">Playing For Buggu</span>
+      <span class="music-sub" id="musicStatusText">Playing For Buggu</span>
     </div>
     <button class="music-toggle-btn" id="musicToggleBtn" title="Play/Pause">⏸️</button>
   </div>
@@ -990,39 +1006,29 @@
     <div class="panda-walk-container">
       <!-- Cute Animated Panda SVG -->
       <svg class="cute-panda" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Ears -->
         <circle cx="50" cy="55" r="26" fill="#1b121e" />
         <circle cx="50" cy="55" r="14" fill="#ff758f" opacity="0.6" />
         <circle cx="150" cy="55" r="26" fill="#1b121e" />
         <circle cx="150" cy="55" r="14" fill="#ff758f" opacity="0.6" />
-        <!-- Head -->
         <ellipse cx="100" cy="100" rx="65" ry="55" fill="#ffffff" />
-        <!-- Eye Patches -->
         <ellipse cx="75" cy="95" rx="18" ry="24" transform="rotate(-15 75 95)" fill="#1b121e" />
         <ellipse cx="125" cy="95" rx="18" ry="24" transform="rotate(15 125 95)" fill="#1b121e" />
-        <!-- Eyes -->
         <circle cx="77" cy="94" r="6" fill="#ffffff" />
         <circle cx="123" cy="94" r="6" fill="#ffffff" />
-        <!-- Cheeks -->
         <ellipse cx="58" cy="115" rx="10" ry="6" fill="#ff4d79" opacity="0.6" />
         <ellipse cx="142" cy="115" rx="10" ry="6" fill="#ff4d79" opacity="0.6" />
-        <!-- Cute Nose & Mouth -->
         <polygon points="100,106 93,114 107,114" fill="#1b121e" />
         <path d="M94 118 Q100 125 106 118" stroke="#1b121e" stroke-width="3" stroke-linecap="round" fill="none" />
-        <!-- Party Hat -->
         <polygon points="100,32 80,75 120,75" fill="#ff2a85" />
         <circle cx="100" cy="30" r="7" fill="#ffd166" />
       </svg>
 
       <!-- 3D Decorated Cake -->
       <div class="cake-container" id="interactiveCake">
-        <!-- Plate -->
         <div class="cake-plate"></div>
-        <!-- Bottom Tier -->
         <div class="cake-tier-bottom">
           <div class="frosting-drips"></div>
         </div>
-        <!-- Top Tier -->
         <div class="cake-tier-top">
           <div class="frosting-drips"></div>
         </div>
@@ -1038,7 +1044,6 @@
           <div class="candle"><div class="flame"></div><div class="smoke"></div></div>
         </div>
 
-        <!-- Cutting Knife -->
         <div class="cutting-knife" id="cuttingKnife">🔪</div>
       </div>
     </div>
@@ -1049,7 +1054,6 @@
        ======================================================== -->
   <main id="stage-celebration">
     
-    <!-- Hero Header -->
     <header class="hero-header">
       <h1 class="hero-title">Happy Birthday My Jaan! ♡</h1>
       <p class="hero-tagline">To the most precious, gorgeous, and sweetest person in my universe...</p>
@@ -1059,8 +1063,8 @@
     <section class="couple-spotlight-section">
       <div class="couple-card">
         <div class="couple-img-wrapper">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725223841.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725223841.jpg'; this.onerror=function(){this.src='couple.jpg';};" 
+          <img src="couple.jpg" 
+               onerror="this.onerror=null; this.src='couple.jpg'; this.onerror=function(){this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725223841.jpg';};" 
                alt="Forever Us" class="couple-img">
           <div class="couple-overlay-badge">
             <h3 class="couple-caption-title">Together, Always & Forever ♡</h3>
@@ -1079,8 +1083,8 @@
       <!-- Photo 1: Pout Selfie -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725112216.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725112216.jpg';" alt="Cute Pout" class="memory-img">
+          <img src="pic1.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725112216.jpg';" alt="Cute Pout" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1091,8 +1095,8 @@
       <!-- Photo 2: Sweet Smile -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725116084.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725116084.jpg';" alt="Sweet Smile" class="memory-img">
+          <img src="pic2.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725116084.jpg';" alt="Sweet Smile" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1103,8 +1107,8 @@
       <!-- Photo 3: Glasses Smile -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725122001.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725122001.jpg';" alt="Specs Beauty" class="memory-img">
+          <img src="pic3.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725122001.jpg';" alt="Specs Beauty" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1115,8 +1119,8 @@
       <!-- Photo 4: Cafe Straw Drink -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725102134.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725102134.jpg';" alt="Cafe Date" class="memory-img">
+          <img src="pic4.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725102134.jpg';" alt="Cafe Date" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1127,8 +1131,8 @@
       <!-- Photo 5: Outdoor Sitting Candid -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725139806.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725139806.jpg';" alt="Outdoor Elegance" class="memory-img">
+          <img src="pic5.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725139806.jpg';" alt="Outdoor Elegance" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1139,8 +1143,8 @@
       <!-- Photo 6: Fairy Lights Walk -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725180306.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725180306.jpg';" alt="Lights Walk" class="memory-img">
+          <img src="pic6.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725180306.jpg';" alt="Lights Walk" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1151,8 +1155,8 @@
       <!-- Photo 7: Menu Card Candid -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725184250.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725184250.jpg';" alt="Menu Candid" class="memory-img">
+          <img src="pic7.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725184250.jpg';" alt="Menu Candid" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1163,8 +1167,8 @@
       <!-- Photo 8: Side Glance Smile -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725188594.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725188594.jpg';" alt="Side Glance" class="memory-img">
+          <img src="pic8.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725188594.jpg';" alt="Side Glance" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1175,8 +1179,8 @@
       <!-- Photo 9: Chin on Hand Candid -->
       <article class="memory-card" onclick="unlockMemory(this)">
         <div class="memory-img-box">
-          <img src="file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725199777.jpg" 
-               onerror="this.onerror=null; this.src='media_1789725199777.jpg';" alt="Adoring Glance" class="memory-img">
+          <img src="pic9.jpg" 
+               onerror="this.onerror=null; this.src='file:///C:/Users/prans/.gemini/antigravity/brain/413c6fa9-c1a4-40df-bf18-375127b9ba62/.user_uploaded/media_1789725199777.jpg';" alt="Adoring Glance" class="memory-img">
         </div>
         <div class="memory-body">
           <span class="unlock-badge-btn">✨ Tap To Unlock Secret Memory 🔓</span>
@@ -1272,7 +1276,7 @@
       reset(init = false) {
         this.x = Math.random() * w;
         this.y = init ? Math.random() * h : h + 20 + Math.random() * 50;
-        this.size = Math.random() * 20 + 12; // 12px to 32px
+        this.size = Math.random() * 20 + 12;
         this.speedY = Math.random() * 1.6 + 0.9;
         this.speedX = (Math.random() - 0.5) * 0.8;
         this.angle = Math.random() * Math.PI * 2;
@@ -1394,36 +1398,119 @@
     }
 
     /* ----------------------------------------------------
-       4. AUDIO CONTROLS (Tera Naam Loonga)
+       4. AUDIO CONTROLS (Local MP3 + Auto YouTube Fallback)
        ---------------------------------------------------- */
     const bgSongPlayer = document.getElementById('bgSongPlayer');
     const musicBar = document.getElementById('musicBar');
     const musicDisc = document.getElementById('musicDisc');
     const musicToggleBtn = document.getElementById('musicToggleBtn');
     let isMusicPlaying = false;
+    let activeAudioSource = null; // 'html5' or 'youtube'
+    let ytPlayer = null;
+    let isYtReady = false;
 
-    function playMusic() {
-      bgSongPlayer.play().then(() => {
-        isMusicPlaying = true;
-        musicBar.style.display = 'flex';
+    // Load YouTube Iframe API for 100% online playback fallback on GitHub Pages
+    const ytScript = document.createElement('script');
+    ytScript.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(ytScript);
+
+    window.onYouTubeIframeAPIReady = function() {
+      ytPlayer = new YT.Player('ytPlayer', {
+        height: '200',
+        width: '200',
+        videoId: 'zVkFeyPLlGE', // "Tera Naam Loonga"
+        playerVars: {
+          'autoplay': 0,
+          'controls': 0,
+          'loop': 1,
+          'playlist': 'zVkFeyPLlGE',
+          'playsinline': 1,
+          'enablejsapi': 1
+        },
+        events: {
+          'onReady': () => { isYtReady = true; },
+          'onStateChange': (event) => {
+            if (event.data === YT.PlayerState.PLAYING) {
+              isMusicPlaying = true;
+              activeAudioSource = 'youtube';
+              updateMusicUI(true);
+            }
+          }
+        }
+      });
+    };
+
+    function updateMusicUI(playing) {
+      musicBar.style.display = 'flex';
+      if (playing) {
         musicDisc.classList.remove('paused');
         musicToggleBtn.innerText = '⏸️';
-      }).catch(err => {
-        console.log('Audio autoplay prevented, will start on next tap:', err);
-      });
+      } else {
+        musicDisc.classList.add('paused');
+        musicToggleBtn.innerText = '▶️';
+      }
+    }
+
+    function playYouTubeFallback() {
+      if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+        try {
+          ytPlayer.unMute();
+          ytPlayer.setVolume(100);
+          ytPlayer.playVideo();
+          activeAudioSource = 'youtube';
+          isMusicPlaying = true;
+          updateMusicUI(true);
+        } catch (e) {
+          console.log("YT play trigger error:", e);
+        }
+      }
+    }
+
+    function playMusic() {
+      // 1. Try local HTML5 audio (song.mp3 in Git repo)
+      bgSongPlayer.volume = 1.0;
+      const playPromise = bgSongPlayer.play();
+
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          isMusicPlaying = true;
+          activeAudioSource = 'html5';
+          updateMusicUI(true);
+        }).catch((err) => {
+          console.log("HTML5 audio failed (likely no local mp3 on git), activating YouTube song:", err);
+          playYouTubeFallback();
+        });
+      }
+
+      // Check after 600ms if HTML5 audio actually started (in case of 404 or network block)
+      setTimeout(() => {
+        if (!isMusicPlaying || bgSongPlayer.paused) {
+          playYouTubeFallback();
+        }
+      }, 600);
     }
 
     musicToggleBtn.addEventListener('click', () => {
       if (isMusicPlaying) {
-        bgSongPlayer.pause();
+        if (activeAudioSource === 'html5') {
+          bgSongPlayer.pause();
+        } else if (activeAudioSource === 'youtube' && ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+          ytPlayer.pauseVideo();
+        }
         isMusicPlaying = false;
-        musicDisc.classList.add('paused');
-        musicToggleBtn.innerText = '▶️';
+        updateMusicUI(false);
       } else {
-        bgSongPlayer.play();
-        isMusicPlaying = true;
-        musicDisc.classList.remove('paused');
-        musicToggleBtn.innerText = '⏸️';
+        if (activeAudioSource === 'html5') {
+          bgSongPlayer.play();
+          isMusicPlaying = true;
+          updateMusicUI(true);
+        } else if (activeAudioSource === 'youtube' && ytPlayer && typeof ytPlayer.playVideo === 'function') {
+          ytPlayer.playVideo();
+          isMusicPlaying = true;
+          updateMusicUI(true);
+        } else {
+          playMusic();
+        }
       }
     });
 
